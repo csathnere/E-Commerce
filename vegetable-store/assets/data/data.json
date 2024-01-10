@@ -1,5 +1,29 @@
 [
     {
+        "name": "tomato",
+        "catogary": "Root Vegetables",
+        "img_src": "tomato.jpg",
+        "price": 60.00,
+        "quantity": "1kg",
+        "properCashText": "Proper cash"
+    },
+    {
+        "name": "mint_leaves",
+        "catogary": "Root Vegetables",
+        "img_src": "mint_leaves.jpg",
+        "price": 70.00,
+        "quantity": "1kg",
+        "properCashText": "Proper cash"
+    },
+    {
+        "name": "orange",
+        "catogary": "Root Vegetables",
+        "img_src": "orange.jpg",
+        "price": 100.00,
+        "quantity": "1kg",
+        "properCashText": "Proper cash"
+    },
+    {
         "name": "Fresh Red Carrot",
         "catogary": "Root Vegetables",
         "img_src": "carrot-red.jpg",
@@ -27,32 +51,8 @@
         "img_src": "beans.jpg",
         "price": 40.00,
         "quantity": "1kg"
-    },
+    },    
     
-    {
-        "name": "tomato",
-        "catogary": "Root Vegetables",
-        "img_src": "tomato.jpg",
-        "price": 60.00,
-        "quantity": "1kg",
-        "properCashText": "Proper cash"
-    },
-    {
-        "name": "mint_leaves",
-        "catogary": "Root Vegetables",
-        "img_src": "mint_leaves.jpg",
-        "price": 70.00,
-        "quantity": "1kg",
-        "properCashText": "Proper cash"
-    },
-    {
-        "name": "orange",
-        "catogary": "Root Vegetables",
-        "img_src": "orange.jpg",
-        "price": 100.00,
-        "quantity": "1kg",
-        "properCashText": "Proper cash"
-    },
     {
         "name": "pyaz",
         "catogary": "Root Vegetables",

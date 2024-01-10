@@ -7,10 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // vegetable data and create HTML elements
             vegetables.forEach(vegetable => {
                 const vegetableElement = document.createElement('div');
-                vegetableElement.classList.add('col-sm-3');
+                vegetableElement.classList.add('col-xl-3');
+                vegetableElement.classList.add('col-lg-4');
+                vegetableElement.classList.add('col-md-6');
+                // vegetableElement.classList.add('col-6');
                 vegetableElement.classList.add('vegetableElement');
                 vegetableElement.innerHTML = ` <div class="product">                  
-                    <img class="shop-item-image" src="assets/data/products/${vegetable.img_src}" alt="${vegetable.name}" style="max-width: 200px;"/>
+                    <img class="shop-item-image img-fluid" src="assets/data/products/${vegetable.img_src}" alt="${vegetable.name}" style="max-width: 200px;"/>
                     <p class="shop-item-title">${vegetable.name} ${vegetable.quantity}</p>
                     <p class="shop-item-price"><b>MRP:</b> ₹${vegetable.price.toFixed(2)}</p>
                     <p>Discount: ${vegetable.discount * 100}%</p> </div>
@@ -106,36 +109,26 @@ function addToCartClicked(event) {
   addItemToCart(title, price, imageSrc)
   updateCartTotal()
   
-  console.log("Title:", title);
-  console.log("Price:", price);
-  console.log("Image Source:", imageSrc);
+//   console.log("Title:", title);
+//   console.log("Price:", price);
+//   console.log("Image Source:", imageSrc);
 }
 
 
 // Save cart items to local storage
 function saveCartToLocalStorage() {
-    var cartItems = document.getElementsByClassName('cart-items')[0];
-    var cartRows = cartItems.getElementsByClassName('cart-row');
-
+    const cartItems = document.querySelector('.cart-items');
+    const cartRows = cartItems.querySelectorAll('.cart-row');
+    
     // Create an array to store the cart items
-    var cart = [];
+    const cart = Array.from(cartRows).map(cartRow => {
+        const title = cartRow.querySelector('.cart-item-title').innerText;
+        const price = cartRow.querySelector('.cart-price').innerText;
+        const imageSrc = cartRow.querySelector('.cart-item-image').src;
+        const quantity = cartRow.querySelector('.cart-quantity-input').value;
 
-    // Iterate through each cart row and extract information
-    for (var i = 0; i < cartRows.length; i++) {
-        var cartRow = cartRows[i];
-        var title = cartRow.getElementsByClassName('cart-item-title')[0].innerText;
-        var price = cartRow.getElementsByClassName('cart-price')[0].innerText;
-        var imageSrc = cartRow.getElementsByClassName('cart-item-image')[0].src;
-        var quantity = cartRow.getElementsByClassName('cart-quantity-input')[0].value;
-
-        // Add the item to the cart array
-        cart.push({
-            title: title,
-            price: price,
-            imageSrc: imageSrc,
-            quantity: quantity
-        });
-    }
+        return { title, price, imageSrc, quantity };
+    });
 
     // Save the cart array to local storage
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -143,33 +136,34 @@ function saveCartToLocalStorage() {
 
 // Fetch cart items from local storage
 function fetchCartFromLocalStorage() {
-    var cartItems = document.getElementsByClassName('cart-items')[0];
+    const cartItems = document.querySelector('.cart-items');
 
     // Check if there are items in local storage
     if (localStorage.getItem('cart')) {
         // Parse the stored JSON string and retrieve the cart array
-        var cart = JSON.parse(localStorage.getItem('cart'));
+        const cart = JSON.parse(localStorage.getItem('cart'));
 
         // Iterate through the cart array and add items to the cart
-        cart.forEach(function (item) {
-            addItemToCart(item.title, item.price, item.imageSrc, item.quantity);
-        });
+        cart.forEach(item => addItemToCart(item.title, item.price, item.imageSrc, item.quantity));
     }
 }
 
 // Add item to cart with an optional quantity parameter
 function addItemToCart(title, price, imageSrc, quantity = 1) {
-    var cartRow = document.createElement('div')
-    cartRow.classList.add('cart-row')
-    var cartItems = document.getElementsByClassName('cart-items')[0]
-    var cartItemNames = cartItems.getElementsByClassName('cart-item-title')
-    for (var i = 0; i < cartItemNames.length; i++) {
-        if (cartItemNames[i].innerText == title) {
-            alert('This item is already added to the cart')
-            return
+    const cartItems = document.querySelector('.cart-items');
+    const cartItemNames = cartItems.querySelectorAll('.cart-item-title');
+
+    for (const cartItemName of cartItemNames) {
+        if (cartItemName.innerText === title) {
+            alert('This item is already added to the cart');
+            return;
         }
     }
-    var cartRowContents = `
+
+    const cartRow = document.createElement('div');
+    cartRow.classList.add('cart-row');
+
+    const cartRowContents = `
         <div class="cart-item cart-column">
             <img class="cart-item-image" src="${imageSrc}" width="100" height="100">
             <span class="cart-item-title">${title}</span>
@@ -177,12 +171,14 @@ function addItemToCart(title, price, imageSrc, quantity = 1) {
         <span class="cart-price cart-column">${price}</span>
         <div class="cart-quantity cart-column">
             <input class="cart-quantity-input" type="number" value="${quantity}">
-            <button class="btn btn-danger" type="button">REMOVE</button>
-        </div>`
-    cartRow.innerHTML = cartRowContents
-    cartItems.append(cartRow)
-    cartRow.getElementsByClassName('btn-danger')[0].addEventListener('click', removeCartItem)
-    cartRow.getElementsByClassName('cart-quantity-input')[0].addEventListener('change', quantityChanged)
+            <button class="btn btn-danger" type="button">×</button>
+        </div>`;
+
+    cartRow.innerHTML = cartRowContents;
+    cartItems.append(cartRow);
+
+    cartRow.querySelector('.btn-danger').addEventListener('click', removeCartItem);
+    cartRow.querySelector('.cart-quantity-input').addEventListener('change', quantityChanged);
 
     // Save the updated cart to local storage
     saveCartToLocalStorage();
@@ -190,23 +186,27 @@ function addItemToCart(title, price, imageSrc, quantity = 1) {
 
 // Call fetchCartFromLocalStorage when your page loads
 fetchCartFromLocalStorage();
-var totalCartItems=0
+
 // Your existing code for updateCartTotal remains the same
 function updateCartTotal() {
-    var cartItemContainer = document.getElementsByClassName('cart-items')[0]
-    var cartRows = cartItemContainer.getElementsByClassName('cart-row')
-    var total = 0
-    totalCartItems=cartRows.length 
-    document.getElementById("current_cart_value").innerHTML= totalCartItems  
-    for (var i = 0; i < cartRows.length; i++) {        
-        var cartRow = cartRows[i]
-        var priceElement = cartRow.getElementsByClassName('cart-price')[0]
-        var quantityElement = cartRow.getElementsByClassName('cart-quantity-input')[0]
-        var price = parseFloat(priceElement.innerText.replace('$', ''))
-        var quantity = quantityElement.value
-        total = total + (price * quantity)
+    const cartItemContainer = document.querySelector('.cart-items');
+    const cartRows = cartItemContainer.querySelectorAll('.cart-row');
+    let total = 0;
+
+    for (const cartRow of cartRows) {
+        const priceElement = cartRow.querySelector('.cart-price');
+        const quantityElement = cartRow.querySelector('.cart-quantity-input');
+        const price = parseFloat(priceElement.innerText.replace('MRP: ₹', ''));
+        const quantity = quantityElement.value;
+
+        total += price * quantity;
     }
-    total = Math.round(total * 100) / 100
-    document.getElementsByClassName('cart-total-price')[0].innerText = '₹' + total
+
+    total = Math.round(total * 100) / 100;
+    document.querySelector('.cart-total-price').innerText = '₹' + total;
+
+    // Update total cart items count
+    const totalCartItems = cartRows.length;
+    document.getElementById("current_cart_value").innerText = totalCartItems;
 }
 
